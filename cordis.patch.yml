@@ -1,0 +1,5 @@
+# dsh-task-instructions bundle patch.
+# 注册 host 端的 Loader 入口；client 端由 package.json 的 dsh.client 自动发现。
+- insert:
+    - id: dsh-task-instructions
+      name: dsh-task-instructions

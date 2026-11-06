@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Task instructions",
+    "description": "A task-instruction button beside the composer that pins one saved requirement set to the current session, so every turn follows the same format without repasting it."
+  }
+}

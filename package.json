@@ -1,0 +1,59 @@
+{
+  "name": "dsh-task-instructions",
+  "version": "0.1.0",
+  "description": "DSH 插件：输入框旁的「任务指令」按钮。把一段固定的任务要求存成提示词，选中后本会话每一轮都按它执行，不用反复粘贴，上下文压缩也不会冲掉。",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "prompt",
+    "task-instructions",
+    "任务指令"
+  ],
+  "license": "MIT",
+  "author": "you-qilin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/you-qilin/dsh-task-instructions.git"
+  },
+  "homepage": "https://github.com/you-qilin/dsh-task-instructions#readme",
+  "bugs": {
+    "url": "https://github.com/you-qilin/dsh-task-instructions/issues"
+  },
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test/smoke.mjs"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "assets/*.jpg",
+    "screenshots.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": []
+    }
+  }
+}
