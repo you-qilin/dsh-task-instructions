@@ -126,6 +126,11 @@ window.__ModuleLoader__.load({
   color:var(--dsw-alias-state-error-primary,#d33);font-size:11.5px;line-height:1.5}
 .ti-empty{margin:0;padding:14px 10px;color:var(--dsw-alias-label-secondary,#6b7280);font-size:12px;
   text-align:center;line-height:1.6}
+.ti-notice{position:fixed;left:50%;bottom:128px;transform:translateX(-50%);z-index:9999;
+  max-width:min(360px,calc(100vw - 32px));box-sizing:border-box;padding:9px 13px;border-radius:10px;
+  background:var(--dsw-alias-bg-layer-2,#2b2f36);color:var(--dsw-alias-label-primary,#e6e8eb);
+  border:1px solid var(--dsw-alias-border-l2,rgba(128,128,128,.34));
+  box-shadow:0 6px 24px rgba(0,0,0,.24);font-size:12px;line-height:1.5;text-align:center}
 `;
 
     function ensureStyle() {
@@ -254,10 +259,12 @@ window.__ModuleLoader__.load({
       const [dragging, setDragging] = useState(null);
       const [dropTarget, setDropTarget] = useState(null);
       const [anchor, setAnchor] = useState({ left: 40, top: 240 });
+      const [notice, setNotice] = useState(null);
 
       const buttonRef = useRef(null);
       const panelRef = useRef(null);
       const clickTimer = useRef(null);
+      const noticeTimer = useRef(null);
 
       const refresh = useCallback(async () => {
         const query = sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : "";
@@ -292,6 +299,22 @@ window.__ModuleLoader__.load({
         }, 190);
       };
       useEffect(() => () => cancelPendingClick(), []);
+
+      /** 轻提示：4 秒后自动消失。@param {string} text */
+      const showNotice = (text) => {
+        setNotice(text);
+        if (noticeTimer.current) clearTimeout(noticeTimer.current);
+        noticeTimer.current = setTimeout(() => {
+          noticeTimer.current = null;
+          setNotice(null);
+        }, 4000);
+      };
+      useEffect(
+        () => () => {
+          if (noticeTimer.current) clearTimeout(noticeTimer.current);
+        },
+        [],
+      );
 
       /** 把 fromId 挪到 toId 的位置；顺序没变时返回 null。@returns {any[] | null} */
       const movedList = (list, fromId, toId) => {
@@ -508,7 +531,10 @@ window.__ModuleLoader__.load({
           setOpen(false);
           if (category.insertIntoDraft) {
             const sentence = `请按任务指令「${category.name} / ${prompt.name}」的要求直接产出结果。`;
-            insertInstructionChip(prompt.name, sentence);
+            const inserted = insertInstructionChip(prompt.name, sentence);
+            if (!inserted) {
+              showNotice("已激活；提示语没能插入输入框，直接输入内容即可。");
+            }
           }
         } catch (reason) {
           setError(messageOf(reason));
@@ -1055,7 +1081,11 @@ window.__ModuleLoader__.load({
         h("span", { className: "ti-caret", "aria-hidden": "true" }, "▾"),
       );
 
-      if (!open) return button;
+      const noticeEl = notice
+        ? h("div", { className: "ti-notice", role: "status" }, notice)
+        : null;
+
+      if (!open) return h(React.Fragment, null, button, noticeEl);
 
       let body = null;
       let title = "任务指令";
@@ -1107,6 +1137,7 @@ window.__ModuleLoader__.load({
         React.Fragment,
         null,
         button,
+        noticeEl,
         createPortal ? createPortal(panel, document.body) : panel,
       );
     }
